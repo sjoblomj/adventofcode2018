@@ -19,7 +19,7 @@ private fun calculateAndPrintDay1() {
   println("First repeating frequency is ${findRepeatedFrequency(content)}")
 }
 
-fun calculateFrequency(input: List<String>): Int = fileContentToInts(input).sum()
+internal fun calculateFrequency(input: List<String>): Int = fileContentToInts(input).sum()
 
 
 internal fun findRepeatedFrequency(input: List<String>): Int {
