@@ -7,10 +7,13 @@ version '1.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
+  jcenter()
 }
 
 dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+  compile "org.jetbrains.kotlin:kotlin-reflect:1.3.10"
+  compile "com.beust:klaxon:4.0.2"
   testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.3.10"
 }
 

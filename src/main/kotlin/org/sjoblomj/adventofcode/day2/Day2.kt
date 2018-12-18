@@ -14,15 +14,15 @@ fun day2() {
   println("Finished Day 2 in $timeTaken ms\n")
 }
 
-fun calculateAndPrintDay2() {
+private fun calculateAndPrintDay2() {
   val content = readFile(inputFile)
   println("Resulting checksum is ${calculateChecksum(content)}")
   println("Common part of the strings where exactly one character differs between them: ${findCommonPartOfStringsWithOneCharDifferences(content)}")
 }
 
-fun containsExactlyTwoIdenticalLetters(line: String) = containsExactlyNIdenticalLetters(line, 2)
+internal fun containsExactlyTwoIdenticalLetters(line: String) = containsExactlyNIdenticalLetters(line, 2)
 
-fun containsExactlyThreeIdenticalLetters(line: String) = containsExactlyNIdenticalLetters(line, 3)
+internal fun containsExactlyThreeIdenticalLetters(line: String) = containsExactlyNIdenticalLetters(line, 3)
 
 private fun containsExactlyNIdenticalLetters(line: String, n: Int): Boolean {
   val charMap = mutableMapOf<Char, Int>()
@@ -31,13 +31,13 @@ private fun containsExactlyNIdenticalLetters(line: String, n: Int): Boolean {
   return charMap.containsValue(n)
 }
 
-fun calculateChecksum(input: List<String>): Int {
+internal fun calculateChecksum(input: List<String>): Int {
   val twos = input.filter { containsExactlyTwoIdenticalLetters(it) }.size
   val threes = input.filter { containsExactlyThreeIdenticalLetters(it) }.size
   return twos * threes
 }
 
-fun exactlyOneCharDiffers(s0: String, s1: String): Boolean {
+internal fun exactlyOneCharDiffers(s0: String, s1: String): Boolean {
 
   var numberOfDifferences = 0
 
@@ -51,7 +51,7 @@ fun exactlyOneCharDiffers(s0: String, s1: String): Boolean {
 }
 
 
-fun findCommonPartOfStringsWithOneCharDifferences(input: List<String>): String? {
+internal fun findCommonPartOfStringsWithOneCharDifferences(input: List<String>): String? {
 
   if (input.map { it.length }.distinct().size != 1)
     throw IllegalArgumentException("Expected all lines to have the same length")
@@ -63,7 +63,7 @@ fun findCommonPartOfStringsWithOneCharDifferences(input: List<String>): String? 
   return null
 }
 
-fun findCommonPart(s0: String, s1: String): String {
+private fun findCommonPart(s0: String, s1: String): String {
 
   return IntStream.range(0, s0.length)
     .filter { s0[it] == s1[it] }

@@ -22,7 +22,7 @@ private fun calculateAndPrintDay1() {
 fun calculateFrequency(input: List<String>): Int = fileContentToInts(input).sum()
 
 
-fun findRepeatedFrequency(input: List<String>): Int {
+internal fun findRepeatedFrequency(input: List<String>): Int {
   if (input.isEmpty())
     throw IllegalArgumentException("Expected input")
 
