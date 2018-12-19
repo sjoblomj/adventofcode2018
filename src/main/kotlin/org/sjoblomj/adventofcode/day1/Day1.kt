@@ -1,7 +1,6 @@
 package org.sjoblomj.adventofcode.day1
 
 import org.sjoblomj.adventofcode.readFile
-import java.lang.IllegalArgumentException
 import kotlin.system.measureTimeMillis
 
 private const val inputFile = "src/main/resources/inputs/day1.txt"
@@ -27,20 +26,17 @@ internal fun findRepeatedFrequency(input: List<String>): Int {
     throw IllegalArgumentException("Expected input")
 
   var frequency = 0
-  val frequencies = mutableListOf(frequency)
+  val frequencies = mutableMapOf(Pair(frequency, 1))
   val fileContent = fileContentToInts(input)
 
-  var i = 0
   while (true) {
     for (num: Int in fileContent) {
       frequency += num
-      if (frequencies.contains(frequency)) {
-        System.out.printf("\r")
+      if (frequencies.containsKey(frequency)) {
         return frequency
       }
-      frequencies.add(frequency)
+      frequencies[frequency] = 1
     }
-    System.out.printf("\rFinding repeated frequency. Iteration %d", i++)
   }
 }
 
