@@ -15,6 +15,7 @@ fun day4() {
 
 private fun calculateAndPrintDay4() {
   val content = parseIndata(inputFile)
+  println(visualize(content))
   println("Resulting checksum for part 1 is ${calculatePart1Checksum(content)}")
   println("Resulting checksum for part 2 is ${calculatePart2Checksum(content)}")
 }
@@ -51,8 +52,8 @@ internal fun getGuardIdWhoIsTheMostAsleep(shifts: List<Shift>): Int {
 }
 
 internal fun getMinuteThatGuardIsTheMostAsleep(shifts: List<Shift>, guardId: Int): Int {
-  val res = getMinuteAndTheNumberOfTimesGuardIsAsleepTheMost(shifts, guardId)
-  return res.first
+  val pairOfMinuteAndCount = getMinuteAndTheNumberOfTimesGuardIsAsleepTheMost(shifts, guardId)
+  return pairOfMinuteAndCount.first
 }
 
 private fun getMinuteAndTheNumberOfTimesGuardIsAsleepTheMost(shifts: List<Shift>, guardId: Int): Pair<Int, Int> {
@@ -92,15 +93,18 @@ private fun getTotalSleepTimeForShift(shift: Shift): Int {
 
 
 internal fun visualize(indata: List<Shift>): String {
+  val maxIdLength = indata.map { it.id.toString().length }.max()?:3
+  val idSpaces = " ".repeat(maxIdLength)
   return "" +
-    "Date   ID   Minute\n" +
-    "            000000000011111111112222222222333333333344444444445555555555\n" +
-    "            012345678901234567890123456789012345678901234567890123456789\n" +
-    indata.joinToString("\n") { visualizeShift(it) }
+    "Date   ID$idSpaces Minute\n" +
+    "         $idSpaces 000000000011111111112222222222333333333344444444445555555555\n" +
+    "         $idSpaces 012345678901234567890123456789012345678901234567890123456789\n" +
+    indata.joinToString("\n") { visualizeShift(it, maxIdLength) }
 }
 
-private fun visualizeShift(shift: Shift): String {
+private fun visualizeShift(shift: Shift, maxIdLength: Int): String {
   val date = shift.date.format(DateTimeFormatter.ofPattern("MM-dd"))
+  val id = "#" + shift.id + " ".repeat(maxIdLength - shift.id.toString().length)
 
   var s = ""
   for (i in 0 until shift.minuteWhenFallingAsleep.size) {
@@ -109,5 +113,5 @@ private fun visualizeShift(shift: Shift): String {
   }
   s += ".".repeat(60 - s.length)
 
-  return "$date  #${shift.id}  $s"
+  return "$date  $id  $s"
 }

@@ -36,7 +36,7 @@ private fun parseSleepAndAwakeTimes(data: List<String>, index: Int, sleepTimes: 
     val sleepTime = getNumberFromLine(data, i++, fallAsleepRegex)
     val awakeTime = getNumberFromLine(data, i++, wakeUpRegex)
 
-    assertLegalValues(sleepTime, sleepTimes, awakeTime, awakeTimes)
+    assertLegalValues(i, sleepTime, sleepTimes, awakeTime, awakeTimes)
 
     sleepTimes.add(sleepTime)
     awakeTimes.add(awakeTime)
@@ -44,12 +44,12 @@ private fun parseSleepAndAwakeTimes(data: List<String>, index: Int, sleepTimes: 
   return i
 }
 
-private fun assertLegalValues(sleepTime: Int, sleepTimes: MutableList<Int>, awakeTime: Int, awakeTimes: MutableList<Int>) {
+private fun assertLegalValues(index: Int, sleepTime: Int, sleepTimes: MutableList<Int>, awakeTime: Int, awakeTimes: MutableList<Int>) {
   if (sleepTimes.isNotEmpty()) {
     if (sleepTimes.last() >= awakeTime)
-      throw IllegalAccessException("Time for falling asleep was after waking up")
+      throw IllegalAccessException("Around index $index of sorted data: Time for falling asleep was after waking up")
     if (awakeTimes.last() >= sleepTime)
-      throw IllegalAccessException("Time for awakening was after falling asleep")
+      throw IllegalAccessException("Around index $index of sorted data: Time for awakening was after falling asleep")
   }
 }
 
@@ -65,10 +65,10 @@ private fun getDateFromLine(data: List<String>, index: Int, regex: Regex): Local
 
 private fun getStringFromLine(data: List<String>, index: Int, regex: Regex): String {
   if (index >= data.size)
-    throw IllegalAccessException("Expected to be able to match '$regex', but found no more indata")
+    throw IllegalAccessException("At index $index of sorted data: Expected to be able to match '$regex', but found no more indata")
   if (!data[index].contains(regex))
-    throw IllegalAccessException("Expected line to match '$regex', but was '${data[index]}'")
+    throw IllegalAccessException("At index $index of sorted data: Expected line to match '$regex', but was '${data[index]}'")
 
   return regex.matchEntire(data[index])?.groups?.get("num")?.value
-    ?: throw IllegalAccessException("Unable to extract requested group")
+    ?: throw IllegalAccessException("At index $index of sorted data: Unable to extract requested group")
 }
