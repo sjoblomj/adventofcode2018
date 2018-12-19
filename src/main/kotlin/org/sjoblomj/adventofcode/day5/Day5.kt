@@ -20,9 +20,9 @@ private fun calculateAndPrintDay5() {
 }
 
 
-internal fun removeMostProblematicUnitAndReduce(polymer: String): String {
+internal fun removeMostProblematicUnitAndReduce(originalPolymer: String): String {
 
-  val allUnitsInPolymer = polymer
+  val allUnitsInPolymer = originalPolymer
     .toLowerCase()
     .chars()
     .distinct()
@@ -30,9 +30,9 @@ internal fun removeMostProblematicUnitAndReduce(polymer: String): String {
     .toList()
 
   return allUnitsInPolymer
-    .map { removeSingleUnitFromPolymer(polymer, it) }
-    .map { reduce(it) }
-    .minBy { it.length }
+    .map { unit -> removeSingleUnitFromPolymer(originalPolymer, unit) }
+    .map { polymer -> reduce(polymer) }
+    .minBy { reducedPolymer -> reducedPolymer.length }
   ?: throw RuntimeException("Unable to find shortest polymer")
 }
 
