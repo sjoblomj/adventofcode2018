@@ -2,7 +2,6 @@ package org.sjoblomj.adventofcode.day3
 
 import org.junit.Test
 import org.sjoblomj.adventofcode.printJson
-import org.sjoblomj.adventofcode.writeFile
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 

@@ -1,7 +1,6 @@
 package org.sjoblomj.adventofcode.day2
 
 import org.sjoblomj.adventofcode.readFile
-import java.lang.IllegalArgumentException
 import java.util.stream.IntStream
 import kotlin.system.measureTimeMillis
 
