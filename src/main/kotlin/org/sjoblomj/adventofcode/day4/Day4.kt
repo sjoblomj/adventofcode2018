@@ -15,9 +15,8 @@ fun day4() {
 
 private fun calculateAndPrintDay4() {
   val content = parseIndata(inputFile)
-  println(visualize(content))
-  println("Resulting checksum for part 1 is ${calculatePart1Checksum(content)}")
-  println("Resulting checksum for part 2 is ${calculatePart2Checksum(content)}")
+  println("Guard who is most asleep * minute guard that guard is the most asleep: ${calculatePart1Checksum(content)}")
+  println("Guard who is most frequently asleep the same minute * that minute: ${calculatePart2Checksum(content)}")
 }
 
 internal fun parseIndata(fileName: String) = parseIndata(readFile(fileName))
