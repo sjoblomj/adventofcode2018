@@ -15,8 +15,9 @@ fun day5() {
 
 private fun calculateAndPrintDay5() {
   val content = File(inputFile).readText()
-  println("Units left after reactions: ${reduce(content).length}")
-  println("Units left after reactions, once the most problematic unit has been removed: ${removeMostProblematicUnitAndReduce(content).length}")
+  val reducedPolymer = reduce(content)
+  println("Units left after reactions: ${reducedPolymer.length}")
+  println("Units left after reactions, once the most problematic unit has been removed: ${removeMostProblematicUnitAndReduce(reducedPolymer).length}")
 }
 
 
