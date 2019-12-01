@@ -44,17 +44,15 @@ internal fun reduce(s: String): String {
   while (i < polymer.length - 1) {
     val unitPair = nextUnitPair(polymer, i)
 
-    if (unitsReact(unitPair)) {
-      polymer = polymer.replace(unitPair, "")
-      i = if (i > 0) i - 1 else 0
-    } else {
-      i++
-    }
+    val unitsReact = unitsReact(unitPair)
+    if (unitsReact)
+      polymer = reducePolymer(polymer, unitPair)
+
+    i = adjustIndex(i, unitsReact)
   }
 
   return polymer
 }
-
 
 private fun nextUnitPair(polymer: String, i: Int) = "${polymer[i]}${polymer[i + 1]}"
 
@@ -64,3 +62,13 @@ private fun unitsReact(unitPair: String) =
      (unitPair[0].isLowerCase() && unitPair[1].isUpperCase()))
 
 private fun removeSingleUnitFromPolymer(polymer: String, unit: Char) = polymer.replace(unit.toString(), "", true)
+
+private fun reducePolymer(polymer: String, unitPair: String) = polymer.replace(unitPair, "")
+
+fun adjustIndex(index: Int, unitsReact: Boolean): Int {
+  return if (unitsReact) {
+    if (index > 0) index - 1 else 0
+  } else {
+    return index + 1
+  }
+}

@@ -3,7 +3,7 @@ package org.sjoblomj.adventofcode.day5
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class Day5Test {
+class Day5Tests {
 
   @Test fun `No unit pair`() {
     assertEquals("", reduce(""))

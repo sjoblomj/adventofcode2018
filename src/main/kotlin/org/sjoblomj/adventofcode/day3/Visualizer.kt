@@ -7,8 +7,8 @@ class Grid(val claims: List<Claim>, val cells: List<List<List<Int>>>)
 
 internal fun visualizeArea(area: Area): String {
   var output = ""
-  for (y in 0 until area.size) {
-    for (x in 0 until area[0].size) {
+  for (y in area.indices) {
+    for (x in area[0].indices) {
       val claims = area[y][x]
       output += when {
         claims.isEmpty() -> "."
@@ -28,8 +28,8 @@ internal fun createGrid(area: Array<Array<Claims>>, claims: List<Claim>): Grid {
   }
 
   val cellsWithIds = matrix2d(area.size, area[0].size) { emptyList<Int>() }
-  for (y in 0 until area[0].size)
-    for (x in 0 until area.size)
+  for (y in area[0].indices)
+    for (x in area.indices)
       cellsWithIds[x][y] = area[x][y].map { it.id }
 
   val cells = cellsWithIds.map { it.toList() }
@@ -37,5 +37,4 @@ internal fun createGrid(area: Array<Array<Claims>>, claims: List<Claim>): Grid {
   return Grid(claims, cells)
 }
 
-// TODO
 internal fun printJson(area: Area, claims: List<Claim>) = printJson(createGrid(area, claims))

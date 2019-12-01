@@ -7,9 +7,9 @@ import java.io.File
 import java.io.FileNotFoundException
 import kotlin.test.*
 
-class UtilTest {
+class UtilTests {
 
-  private val path = "out/test/test.txt"
+  private val path = "build/test-results/test/test.txt"
 
   @Before fun setup() {
     deleteFileIfExists()

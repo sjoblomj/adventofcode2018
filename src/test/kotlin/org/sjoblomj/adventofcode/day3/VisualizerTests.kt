@@ -5,7 +5,7 @@ import org.sjoblomj.adventofcode.printJson
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class VisualizerTest {
+class VisualizerTests {
   @Test fun `Empty areas gives exceptions`() {
     assertFailsWith(IllegalArgumentException::class) {
       createGrid(emptyArray(), emptyList())
@@ -22,7 +22,7 @@ class VisualizerTest {
   }
 
   @Test fun `Can create area with one element`() {
-    val claims = listOf(Claim(71, 0, 0, 1, 1))
+    val claims = mutableListOf(Claim(71, 0, 0, 1, 1))
     val area = createArea(claims)
     val expectedVisualization = "" +
       "G.\n" +
@@ -46,7 +46,7 @@ class VisualizerTest {
   }
 
   @Test fun `Can create area with two elements without overlaps`() {
-    val claims = listOf(Claim(71, 0, 0, 1, 1), Claim(68, 0, 1, 1, 2))
+    val claims = mutableListOf(Claim(71, 0, 0, 1, 1), Claim(68, 0, 1, 1, 2))
     val area = createArea(claims)
     val expectedVisualization = "" +
       "G.\n" +
@@ -70,7 +70,7 @@ class VisualizerTest {
   }
 
   @Test fun `Can create area with two elements with overlaps`() {
-    val claims = listOf(Claim(71, 0, 0, 1, 2), Claim(68, 0, 1, 1, 3))
+    val claims = mutableListOf(Claim(71, 0, 0, 1, 2), Claim(68, 0, 1, 1, 3))
     val area = createArea(claims)
     val expectedVisualization = "" +
       "G.\n" +
@@ -96,7 +96,7 @@ class VisualizerTest {
   }
 
   @Test fun `Can create area with and without overlaps`() {
-    val claims = listOf(parseClaim("#71 @ 1,3: 4x4"), parseClaim("#68 @ 3,1: 4x4"), parseClaim("#78 @ 5,5: 2x2"))
+    val claims = mutableListOf(parseClaim("#71 @ 1,3: 4x4"), parseClaim("#68 @ 3,1: 4x4"), parseClaim("#78 @ 5,5: 2x2"))
     val area = createArea(claims)
     val expectedVisualization = "" +
       "........\n" +

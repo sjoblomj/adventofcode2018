@@ -72,7 +72,7 @@ private fun getMinuteAndTheNumberOfTimesGuardIsAsleepTheMost(shifts: List<Shift>
 
 private fun isAsleepAtGivenMinute(shift: Shift, minute: Int): Boolean {
 
-  for (i in 0 until shift.minuteWhenFallingAsleep.size) {
+  for (i in shift.minuteWhenFallingAsleep.indices) {
     if (minute >= shift.minuteWhenFallingAsleep[i] && minute < shift.minuteWhenAwoken[i])
       return true
   }
@@ -106,7 +106,7 @@ private fun visualizeShift(shift: Shift, maxIdLength: Int): String {
   val id = "#" + shift.id + " ".repeat(maxIdLength - shift.id.toString().length)
 
   var s = ""
-  for (i in 0 until shift.minuteWhenFallingAsleep.size) {
+  for (i in shift.minuteWhenFallingAsleep.indices) {
     s += ".".repeat(shift.minuteWhenFallingAsleep[i] - s.length)
     s += "#".repeat(shift.minuteWhenAwoken[i] - s.length)
   }

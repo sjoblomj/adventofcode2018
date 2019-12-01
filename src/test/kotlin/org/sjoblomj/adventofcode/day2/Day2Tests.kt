@@ -4,7 +4,7 @@ import org.junit.Test
 import java.util.Arrays.asList
 import kotlin.test.*
 
-class Day2Test {
+class Day2Tests {
   @Test fun `Contains exactly n identical letters`() {
     assertFalse(containsExactlyTwoIdenticalLetters(""))
     assertFalse(containsExactlyThreeIdenticalLetters(""))
@@ -48,22 +48,22 @@ class Day2Test {
   }
 
   @Test fun `Throws exception if input lengths differ when trying to find common part of strings`() {
-    val input = asList("abc", "defghi")
+    val input = listOf("abc", "defghi")
     assertFailsWith(IllegalArgumentException::class) {
       findCommonPartOfStringsWithOneCharDifferences(input)
     }
   }
 
   @Test fun `Can gracefully fail to find common part of strings that differ with exactly one char`() {
-    val input = asList("abcde", "dghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz")
+    val input = listOf("abcde", "dghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz")
     assertNull(findCommonPartOfStringsWithOneCharDifferences(input))
   }
 
   @Test fun `Can find common part of strings that differ with exactly one char`() {
-    val input0 = asList("abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz")
+    val input0 = listOf("abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz")
     assertEquals("fgij", findCommonPartOfStringsWithOneCharDifferences(input0))
 
-    val input1 = asList("abcde", "fghij", "klmno", "pqrst", "axcye", "wvxyz", "fguij")
+    val input1 = listOf("abcde", "fghij", "klmno", "pqrst", "axcye", "wvxyz", "fguij")
     assertEquals("fgij", findCommonPartOfStringsWithOneCharDifferences(input1))
   }
 }

@@ -40,7 +40,7 @@ internal fun exactlyOneCharDiffers(s0: String, s1: String): Boolean {
 
   var numberOfDifferences = 0
 
-  for (i in 0 until s0.length) {
+  for (i in s0.indices) {
     if (s0[i] != s1[i])
       numberOfDifferences++
     if (numberOfDifferences > 1)
@@ -55,7 +55,7 @@ internal fun findCommonPartOfStringsWithOneCharDifferences(input: List<String>):
   if (input.map { it.length }.distinct().size != 1)
     throw IllegalArgumentException("Expected all lines to have the same length")
 
-  for (i in 0 until input.size)
+  for (i in input.indices)
     for (j in i + 1 until input.size)
       if (exactlyOneCharDiffers(input[i], input[j]))
         return findCommonPart(input[i], input[j])

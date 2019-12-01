@@ -19,7 +19,7 @@ fun day3() {
 }
 
 private fun calculateAndPrintDay3() {
-  val claims = readFile(inputFile).map { parseClaim(it) }
+  val claims = readFile(inputFile).map { parseClaim(it) }.toMutableList()
   val area = createArea(claims)
   println("Number of overlaps are ${calculateOverlaps(area)}")
   println("The ids of the claims that do not overlap with any other are ${findClaimsWithoutOverlaps(area, claims).map { it.id }}")
@@ -28,30 +28,30 @@ private fun calculateAndPrintDay3() {
 
 internal fun calculateOverlaps(area: Area): Int {
   var overlaps = 0
-  for (y in 0 until area.size) {
-    for (x in 0 until area[0].size) {
+  for (y in area.indices) {
+    for (x in area[0].indices) {
       overlaps += if (area[y][x].size > 1) 1 else 0
     }
   }
   return overlaps
 }
 
-internal fun findClaimsWithoutOverlaps(area: Area, claims: List<Claim>): List<Claim> {
+internal fun findClaimsWithoutOverlaps(area: Area, claims: Claims): Claims {
   val overlaps = arrayListOf<Claim>()
 
-  for (y in 0 until area.size) {
-    for (x in 0 until area[0].size) {
+  for (y in area.indices) {
+    for (x in area[0].indices) {
       if (area[y][x].size > 1) {
         val unseenOverlaps = area[y][x].filter { !overlaps.contains(it) }
         overlaps.addAll(unseenOverlaps)
       }
     }
   }
-  return claims.minus(overlaps)
+  return claims.minus(overlaps).toMutableList()
 }
 
 
-internal fun createArea(claims: List<Claim>): Area {
+internal fun createArea(claims: Claims): Area {
   val width = claims.map { it.x1 }.max()?.plus(1)?: 1
   val height = claims.map { it.y1 }.max()?.plus(1)?: 1
 

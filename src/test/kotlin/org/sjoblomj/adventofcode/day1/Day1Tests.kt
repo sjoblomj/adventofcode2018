@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class MainTest {
+class Day1Tests {
 
   @Test fun `Can calculate frequency for empty input`() {
     assertEquals(0, calculateFrequency(emptyList()))

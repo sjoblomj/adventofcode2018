@@ -3,7 +3,7 @@ package org.sjoblomj.adventofcode.day4
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class Day4Test {
+class Day4Tests {
 
   private val exampleIndata = listOf(
     "[1518-11-01 00:00] Guard #10 begins shift",

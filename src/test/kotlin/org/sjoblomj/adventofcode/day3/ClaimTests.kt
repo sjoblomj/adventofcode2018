@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class ClaimTest {
+class ClaimTests {
   @Test fun `Parsing claim throws exception for empty input`() {
     assertFailsWith(IllegalArgumentException::class) {
       parseClaim("")

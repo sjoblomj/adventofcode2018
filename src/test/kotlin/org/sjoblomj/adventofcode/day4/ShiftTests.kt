@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class ShiftTest {
+class ShiftTests {
   @Test fun `Illegal input throws exceptions`() {
     assertFailsWith(IllegalAccessException::class) {
       parseIndata(listOf("First line is bogus", "[1518-04-06 00:09] falls asleep", "[1518-04-06 00:32] wakes up"))
@@ -59,7 +59,7 @@ class ShiftTest {
         "[1518-04-06 00:00] Guard #499 begins shift",
         "[1518-04-06 00:09] falls asleep",
         "[1518-04-06 00:34] wakes up",
-        "[1518-04-06 00:39] falls asleep" // Can't falling asleep without waking up
+        "[1518-04-06 00:39] falls asleep" // Can't fall asleep without waking up
       ))
     }
   }
