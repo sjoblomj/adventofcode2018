@@ -1,20 +1,46 @@
-plugins {
-  id 'org.jetbrains.kotlin.jvm' version '1.3.10'
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  configurations.maybeCreate('pitest')
+  dependencies {
+    classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.5'
+  }
 }
 
-group 'org.sjoblomj'
-version '1.0-SNAPSHOT'
+plugins {
+    // Apply the Kotlin JVM plugin to add support for Kotlin.
+    id 'org.jetbrains.kotlin.jvm' version '1.3.41'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+}
 
 repositories {
-  mavenCentral()
-  jcenter()
+    // Use jcenter for resolving dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
 }
 
 dependencies {
-  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-  compile "org.jetbrains.kotlin:kotlin-reflect:1.3.10"
-  compile "com.beust:klaxon:4.0.2"
-  testCompile "org.jetbrains.kotlin:kotlin-test-junit:1.3.10"
+    // Align versions of all Kotlin components
+    implementation platform('org.jetbrains.kotlin:kotlin-bom')
+
+    // Use the Kotlin JDK 8 standard library.
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+
+    implementation 'com.beust:klaxon:5.0.12'
+
+    // Use the Kotlin test library.
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    // Use the Kotlin JUnit integration.
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'org.sjoblomj.adventofcode.MainKt'
 }
 
 compileKotlin {
@@ -22,4 +48,11 @@ compileKotlin {
 }
 compileTestKotlin {
   kotlinOptions.jvmTarget = "1.8"
+}
+
+apply plugin: 'info.solidsoft.pitest'
+
+pitest {
+  targetClasses = ['org.sjoblomj.adventofcode.*']
+  excludedTestClasses = ['org.sjoblomj.adventofcode.UtilTestKt']
 }
