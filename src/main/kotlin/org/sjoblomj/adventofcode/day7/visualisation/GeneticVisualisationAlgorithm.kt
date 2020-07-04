@@ -1,135 +1,13 @@
-package org.sjoblomj.adventofcode.day7
+package org.sjoblomj.adventofcode.day7.visualisation
 
-import org.sjoblomj.adventofcode.GeneticsStandardImplementation
 import org.sjoblomj.adventofcode.AlgorithmProperties
+import org.sjoblomj.adventofcode.GeneticsStandardImplementation
 import org.sjoblomj.adventofcode.Score
-import org.sjoblomj.adventofcode.writeFile
-import java.io.File
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
-
-data class Coord(val col: Int, val row: Int)
-
-/**
- * Given a list of nodes, this function will return the node ids mapped to x and y positions for that node.
- * The positions are chosen so that every node p that is a prerequisite for node q, the x-position of p will
- * always be before that of q. In other words, the nodes are placed in the order that they must be completed in.
- *
- * The positions can be seen as a grid of x and y coordinates, although it should be noted that the majority
- * of the positions in the grid will be empty. In the result, each id will deterministically have the same
- * x-position assigned to it each time the function is executed, but the y-position is subject to change.
- * A stochastic genetic algorithm is used to calculate y-positions, and the result is thus subject to randomness.
- */
-fun createNodeGrid(nodes: List<Node>, resultingOrder: String): Grid {
-
-  val grid = orderNodesInGrid(nodes)
-  // grid has mapped every node id to an x and y coordinate.
-  // It is, however, a dense graph that is not visually very pleasing.
-  // When drawing lines between the nodes, it will be difficult to
-  // make out the graph since the nodes are so close together,
-  // and many lines will go through other nodes.
-  //
-  // Although each node id has a unique x and y coordinate, we wish
-  // to update the y-coordinates so that the graph will look better.
-  // Using a genetic algorithm, we can stochastically compute this.
-  // The x coordinate for each node will be fixed, but the algorithm
-  // will seek to find better y coordinates.
-
-  return runGeneticAlgorithm(nodes, grid, resultingOrder)
-}
-
-internal fun orderNodesInGrid(nodes: List<Node>): Grid {
-  val grid = newGrid()
-  var column = 0
-
-  while (!nodes.all { grid.containsKey(it.id) }) {
-
-    val nodesToBeAdded = nodes
-      .filter { !grid.containsKey(it.id) }
-      .filter { mapContainsEveryPrerequisite(it, grid) }
-
-    for (node in nodesToBeAdded) {
-      var row = 0
-      while (grid.containsValue(Coord(column, row))) {
-        row++
-      }
-
-      grid[node.id] = Coord(column, row)
-    }
-    column++
-  }
-  return grid
-}
-
-private fun mapContainsEveryPrerequisite(node: Node, grid: Grid) =
-  getAllPrerequisites(node).all { grid.containsKey(it.id) }
-
-private fun getAllPrerequisites(node: Node) = getAllPrerequisitesIncludingSelf(node).minus(node)
-
-private fun getAllPrerequisitesIncludingSelf(node: Node): List<Node> {
-  return node.prerequisites
-    .flatMap { getAllPrerequisitesIncludingSelf(it) }
-    .toMutableList()
-    .plus(node)
-}
-
-private fun getMinRowInGrid(grid: Grid) =
-  grid.map { it.value.row }.min() ?: error("Failed to find smallest row")
-
-internal fun getMaxRowInGrid(grid: Grid) =
-  grid.map { it.value.row }.max() ?: error("Failed to find biggest row")
-
-internal fun getMaxColInGrid(grid: Grid) =
-  grid.map { it.value.col }.max() ?: error("Failed to find biggest col")
-
-
-fun createVisualizationFileOnHarddrive(nodes: List<Node>, resultingOrder: String, solution: Grid,
-                                       originalNodeGrid: Grid, initialPopulation: List<Grid>,
-                                       bestIndividualInEachIteration: List<Pair<Grid, Score>>) {
-
-  val content = Day7GeneticVisualizer::class.java.getResource("/visualizations/day7.html").readText()
-
-  fun replaceLine(content: String, searchString: String, newValue: String): String {
-    val stringIndex = content.indexOf(searchString)
-    val indexOfPreviousNewline = content.substring(0, stringIndex).lastIndexOf("\n") + 1
-    val indexOfNextNewline = content.indexOf("\n", stringIndex)
-    return content.substring(0, indexOfPreviousNewline) + newValue + content.substring(indexOfNextNewline)
-  }
-  val linkData = nodes.flatMap { nodeRep -> nodeRep.dependers.map { dep -> "{from: \"${nodeRep.id}\", to: \"${dep.id}\"}" } }.toString()
-  val nodeData = solution.map { "{id: \"${it.key}\", x: ${it.value.col + 1}, y: ${it.value.row + 1}}" }.toString()
-  val originalNodeOrdering = originalNodeGrid.map { "{id: \"${it.key}\", x: ${it.value.col + 1}, y: ${it.value.row + 1}}" }.toString()
-  val initialPopulationData = initialPopulation.map { individual -> individual.map { "{id: \"${it.key}\", x: ${it.value.col + 1}, y: ${it.value.row + 1}}" }.toString() }
-  val bestIndividual = bestIndividualInEachIteration.map { (individual, score) ->
-    "{score: $score, individual: " + individual.map { "{id: \"${it.key}\", x: ${it.value.col + 1}, y: ${it.value.row + 1}}" }.toString() + "}"}
-
-  var updatedContent = content
-  updatedContent = replaceLine(updatedContent, "##VISUALIZER_RESULTING_ORDER##", "    var resultingOrder = \"$resultingOrder\";")
-  updatedContent = replaceLine(updatedContent, "##VISUALIZER_LINK_DATA##", "    var linkData = $linkData;")
-  updatedContent = replaceLine(updatedContent, "##VISUALIZER_SOLUTION##", "    var solution = $nodeData;")
-  updatedContent = replaceLine(updatedContent, "##VISUALIZER_ORIGINAL_NODE_ORDERING##", "    var originalNodeOrdering = $originalNodeOrdering;")
-  updatedContent = replaceLine(updatedContent, "##VISUALIZER_ORIGINAL_POPULATION##", "    var initialPopulation = $initialPopulationData;")
-  updatedContent = replaceLine(updatedContent, "##VISUALIZER_BEST_INDIVIDUAL_IN_EACH_ITERATION##", "    var bestIndividualInEachIteration = $bestIndividual;")
-
-  val dir = "./build/visualizations/"
-  val filename = "day7.html"
-  if (!File(dir).exists()) {
-    assert(File(dir).mkdir())
-  }
-  writeFile(dir + filename, updatedContent)
-}
-
-
-/**
- * If the node with the lowest row position x is > 0, we wish to subtract x from every single node,
- * so that the graph starts at row 0.
- */
-private fun removeDeadSpace(grid: Grid): Grid {
-  val minRowInGrid = getMinRowInGrid(grid)
-  return grid.map { (id, coord) -> id to Coord(coord.col, coord.row - minRowInGrid) }.toMap()
-}
 
 
 /**
@@ -137,7 +15,7 @@ private fun removeDeadSpace(grid: Grid): Grid {
  * Using a genetic algorithm, we can stochastically compute this. The x coordinate for each node
  * will be fixed, but the algorithm will seek to find better y coordinates.
  */
-private fun runGeneticAlgorithm(nodes: List<Node>, grid: Grid, resultingOrder: String): Grid {
+fun runGeneticAlgorithm(nodes: List<PreReq>, grid: Grid): Triple<Grid, List<Grid>, MutableList<Pair<Grid, Score>>> {
 
   // Number of individuals that are created in each iteration
   val populationSize = 128
@@ -167,23 +45,30 @@ private fun runGeneticAlgorithm(nodes: List<Node>, grid: Grid, resultingOrder: S
   val chanceOfMutation = 0.01
 
 
-  val properties = Day7GeneticVisualizerProperties(populationSize, numberOfTopPerformersToPick, numberOfLuckyFewToPick,
-    iterationsWithoutChangesBeforeConverging, grid, nodes, maxRows, maxCols, penaltyForGoingThroughNode, chanceOfMutation)
-  val geneticVisualizer = Day7GeneticVisualizer(properties)
+  val properties = Day7GeneticVisualiserProperties(
+    populationSize,
+    numberOfTopPerformersToPick,
+    numberOfLuckyFewToPick,
+    iterationsWithoutChangesBeforeConverging,
+    grid,
+    nodes,
+    maxRows,
+    maxCols,
+    penaltyForGoingThroughNode,
+    chanceOfMutation
+  )
+  val geneticVisualizer = Day7GeneticVisualiser(properties)
 
   val solutions = geneticVisualizer.generateGeneticSolution()
   val solution = removeDeadSpace(solutions.first())
 
 
-  createVisualizationFileOnHarddrive(nodes, resultingOrder, solution, grid, geneticVisualizer.initialPopulation,
-    geneticVisualizer.bestIndividualInEachIteration)
-
-  return solution
+  return Triple(solution, geneticVisualizer.initialPopulation, geneticVisualizer.bestIndividualInEachIteration)
 }
 
 
-class Day7GeneticVisualizer(properties: Day7GeneticVisualizerProperties) :
-  GeneticsStandardImplementation<Grid, Day7GeneticVisualizerProperties>(properties) {
+class Day7GeneticVisualiser(properties: Day7GeneticVisualiserProperties) :
+  GeneticsStandardImplementation<Grid, Day7GeneticVisualiserProperties>(properties) {
 
   internal lateinit var initialPopulation: List<Grid>
   private val primeNumbers = getAllPrimesLessThan(max(properties.maxCols, properties.maxRows)) // Precalculate for optimization reasons
@@ -393,18 +278,40 @@ class Day7GeneticVisualizer(properties: Day7GeneticVisualizerProperties) :
 }
 
 
-data class Day7GeneticVisualizerProperties(
+private fun getMinRowInGrid(grid: Grid) =
+  grid.map { it.value.row }.min() ?: error("Failed to find smallest row")
+
+internal fun getMaxRowInGrid(grid: Grid) =
+  grid.map { it.value.row }.max() ?: error("Failed to find biggest row")
+
+internal fun getMaxColInGrid(grid: Grid) =
+  grid.map { it.value.col }.max() ?: error("Failed to find biggest col")
+
+
+/**
+ * If the node with the lowest row position x is > 0, we wish to subtract x from every single node,
+ * so that the graph starts at row 0.
+ */
+private fun removeDeadSpace(grid: Grid): Grid {
+  val minRowInGrid = getMinRowInGrid(grid)
+  return grid
+    .map { (id, coord) -> id to Coord(coord.col, coord.row - minRowInGrid) }
+    .toMap()
+}
+
+
+data class Day7GeneticVisualiserProperties(
   override val populationSize: Int,
   override val numberOfTopPerformersToPick: Int,
   override val numberOfLuckyFewToPick: Int,
   override val iterationsWithoutChangesBeforeConverging: Int,
   val originalNodeGrid: Grid,
-  val nodeList: List<Node>,
+  val nodeList: List<PreReq>,
   val maxRows: Int,
   val maxCols: Int,
   val penaltyForGoingThroughNode: Int,
   val chanceOfMutation: Double
 ) : AlgorithmProperties
 
-typealias Grid = Map<String, Coord>
-fun newGrid() = HashMap<String, Coord>()
+private typealias Grid = Map<String, Coord>
+private fun newGrid() = HashMap<String, Coord>()

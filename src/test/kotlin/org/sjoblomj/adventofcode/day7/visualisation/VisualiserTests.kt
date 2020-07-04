@@ -1,6 +1,7 @@
-package org.sjoblomj.adventofcode.day7
+package org.sjoblomj.adventofcode.day7.visualisation
 
 import org.junit.Test
+import org.sjoblomj.adventofcode.day7.createNodesFromInput
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -9,7 +10,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class VisualizerTests {
+class VisualiserTests {
 
   @Test
   fun `Two nodes, One level deep`() {
@@ -149,12 +150,12 @@ class VisualizerTests {
 
 
   @Test
-  fun `Test Visualizer -- Fitness function`() {
+  fun `Test Visualiser -- Fitness function`() {
     val penalty = 50
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes, penalty)
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes, penalty)
 
-    val result = geneticVisualizer.calculateFitnessFunction(listOf(nodeGrid))[0].second
+    val result = geneticVisualiser.calculateFitnessFunction(listOf(nodeGrid))[0].second
 
     val expectedEuclideanDistances =
       1*4 + // 4 straight neighbouring distances of length 1
@@ -169,11 +170,11 @@ class VisualizerTests {
   }
 
   @Test
-  fun `Test Visualizer -- Initialize Population`() {
+  fun `Test Visualiser -- Initialize Population`() {
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes)
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes)
 
-    val result = geneticVisualizer.initialisePopulation()
+    val result = geneticVisualiser.initialisePopulation()
 
     assertEquals(2, result.size)
     assertIndividualsDiffer(nodeGrid, result[0])
@@ -181,24 +182,24 @@ class VisualizerTests {
   }
 
   @Test
-  fun `Test Visualizer -- mutation`() {
+  fun `Test Visualiser -- mutation`() {
     val chanceOfMutation = 1.0 // Always mutate
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes, 1, chanceOfMutation)
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes, 1, chanceOfMutation)
 
-    val result = geneticVisualizer.performMutation(listOf(nodeGrid))
+    val result = geneticVisualiser.performMutation(listOf(nodeGrid))
 
     assertEquals(1, result.size)
     assertIndividualsDiffer(nodeGrid, result[0])
   }
 
   @Test
-  fun `Test Visualizer -- crossover`() {
+  fun `Test Visualiser -- crossover`() {
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes)
-    val mutatedNodeGrid = geneticVisualizer.performMutation(listOf(nodeGrid))[0]
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes)
+    val mutatedNodeGrid = geneticVisualiser.performMutation(listOf(nodeGrid))[0]
 
-    val result = geneticVisualizer.performCrossover(listOf(nodeGrid, mutatedNodeGrid))
+    val result = geneticVisualiser.performCrossover(listOf(nodeGrid, mutatedNodeGrid))
 
     assertEquals(2, result.size)
     val individual0 = result[0]
@@ -208,12 +209,12 @@ class VisualizerTests {
   }
 
   @Test
-  fun `Test Visualizer -- breed`() {
+  fun `Test Visualiser -- breed`() {
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes)
-    val mutatedNodeGrid = geneticVisualizer.performMutation(listOf(nodeGrid))[0]
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes)
+    val mutatedNodeGrid = geneticVisualiser.performMutation(listOf(nodeGrid))[0]
 
-    val result = geneticVisualizer.breed(nodeGrid, mutatedNodeGrid)
+    val result = geneticVisualiser.breed(nodeGrid, mutatedNodeGrid)
 
     assertEquals(nodeGrid.size, result.size)
     nodeGrid.forEach { (id, coord) -> assertEquals(coord.col, result[id]?.col) }
@@ -226,104 +227,104 @@ class VisualizerTests {
   }
 
   @Test
-  fun `Test Visualizer -- populationHasConverged -- too few iterations`() {
+  fun `Test Visualiser -- populationHasConverged -- too few iterations`() {
     val iterationsWithoutChangesBeforeConverging = 5
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes, 1, 1.0, iterationsWithoutChangesBeforeConverging)
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes, 1, 1.0, iterationsWithoutChangesBeforeConverging)
 
-    assertEquals(0, geneticVisualizer.bestIndividualInEachIteration.size)
-    assertFalse(geneticVisualizer.populationHasConverged(geneticVisualizer.calculateFitnessFunction(listOf(nodeGrid))), "There should have been too few iterations")
+    assertEquals(0, geneticVisualiser.bestIndividualInEachIteration.size)
+    assertFalse(geneticVisualiser.populationHasConverged(geneticVisualiser.calculateFitnessFunction(listOf(nodeGrid))), "There should have been too few iterations")
   }
 
   @Test
-  fun `Test Visualizer -- populationHasConverged -- has not converged`() {
+  fun `Test Visualiser -- populationHasConverged -- has not converged`() {
     val iterationsWithoutChangesBeforeConverging = 5
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes, 1, 1.0, iterationsWithoutChangesBeforeConverging)
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes, 1, 1.0, iterationsWithoutChangesBeforeConverging)
 
-    val nodeGridWithFitnessScore = geneticVisualizer.calculateFitnessFunction(listOf(nodeGrid))[0]
+    val nodeGridWithFitnessScore = geneticVisualiser.calculateFitnessFunction(listOf(nodeGrid))[0]
     val iterations = List(iterationsWithoutChangesBeforeConverging + 1) { nodeGridWithFitnessScore }
-    geneticVisualizer.bestIndividualInEachIteration.addAll(iterations)
-    val mutatedNodeGridWithFitnessScore = geneticVisualizer.calculateFitnessFunction(geneticVisualizer.performMutation(listOf(nodeGrid)))[0]
-    geneticVisualizer.bestIndividualInEachIteration.addAll(listOf(mutatedNodeGridWithFitnessScore))
+    geneticVisualiser.bestIndividualInEachIteration.addAll(iterations)
+    val mutatedNodeGridWithFitnessScore = geneticVisualiser.calculateFitnessFunction(geneticVisualiser.performMutation(listOf(nodeGrid)))[0]
+    geneticVisualiser.bestIndividualInEachIteration.addAll(listOf(mutatedNodeGridWithFitnessScore))
 
-    assertEquals(9, geneticVisualizer.bestIndividualInEachIteration.size)
-    assertFalse(geneticVisualizer.populationHasConverged(geneticVisualizer.calculateFitnessFunction(listOf(nodeGrid))), "The last few iterations are not the same")
+    assertEquals(9, geneticVisualiser.bestIndividualInEachIteration.size)
+    assertFalse(geneticVisualiser.populationHasConverged(geneticVisualiser.calculateFitnessFunction(listOf(nodeGrid))), "The last few iterations are not the same")
   }
 
   @Test
-  fun `Test Visualizer -- populationHasConverged -- has converged`() {
+  fun `Test Visualiser -- populationHasConverged -- has converged`() {
     val iterationsWithoutChangesBeforeConverging = 5
     val (nodes, nodeGrid) = createNodeGrid()
-    val geneticVisualizer = createVisualizer(nodeGrid, nodes, 1, 1.0, iterationsWithoutChangesBeforeConverging)
+    val geneticVisualiser = createVisualiser(nodeGrid, nodes, 1, 1.0, iterationsWithoutChangesBeforeConverging)
 
-    val nodeGridWithFitnessScore = geneticVisualizer.calculateFitnessFunction(listOf(nodeGrid))[0]
+    val nodeGridWithFitnessScore = geneticVisualiser.calculateFitnessFunction(listOf(nodeGrid))[0]
     val iterations = List(iterationsWithoutChangesBeforeConverging + 1) { nodeGridWithFitnessScore }
-    geneticVisualizer.bestIndividualInEachIteration.addAll(iterations)
+    geneticVisualiser.bestIndividualInEachIteration.addAll(iterations)
 
-    assertEquals(7, geneticVisualizer.bestIndividualInEachIteration.size)
-    assertTrue(geneticVisualizer.populationHasConverged(geneticVisualizer.calculateFitnessFunction(listOf(nodeGrid))))
+    assertEquals(7, geneticVisualiser.bestIndividualInEachIteration.size)
+    assertTrue(geneticVisualiser.populationHasConverged(geneticVisualiser.calculateFitnessFunction(listOf(nodeGrid))))
   }
 
 
   @Test
   fun `Can factorize`() {
-    val geneticVisualizer = createVisualizer()
+    val geneticVisualiser = createVisualiser()
 
-    assertEquals(emptyList(), geneticVisualizer.factorize(0).sorted())
-    assertEquals(emptyList(), geneticVisualizer.factorize(1).sorted())
-    assertEquals(listOf(2), geneticVisualizer.factorize(2).sorted())
-    assertEquals(listOf(3), geneticVisualizer.factorize(3).sorted())
-    assertEquals(listOf(2, 2), geneticVisualizer.factorize(4).sorted())
-    assertEquals(listOf(5), geneticVisualizer.factorize(5).sorted())
-    assertEquals(listOf(2, 3), geneticVisualizer.factorize(6).sorted())
-    assertEquals(listOf(7), geneticVisualizer.factorize(7).sorted())
-    assertEquals(listOf(2, 2, 5), geneticVisualizer.factorize(5*2*2).sorted())
-    assertEquals(listOf(3, 7), geneticVisualizer.factorize(21).sorted())
+    assertEquals(emptyList(), geneticVisualiser.factorize(0).sorted())
+    assertEquals(emptyList(), geneticVisualiser.factorize(1).sorted())
+    assertEquals(listOf(2), geneticVisualiser.factorize(2).sorted())
+    assertEquals(listOf(3), geneticVisualiser.factorize(3).sorted())
+    assertEquals(listOf(2, 2), geneticVisualiser.factorize(4).sorted())
+    assertEquals(listOf(5), geneticVisualiser.factorize(5).sorted())
+    assertEquals(listOf(2, 3), geneticVisualiser.factorize(6).sorted())
+    assertEquals(listOf(7), geneticVisualiser.factorize(7).sorted())
+    assertEquals(listOf(2, 2, 5), geneticVisualiser.factorize(5*2*2).sorted())
+    assertEquals(listOf(3, 7), geneticVisualiser.factorize(21).sorted())
   }
 
   @Test
   fun `Can reduce fraction`() {
-    val geneticVisualizer = createVisualizer()
+    val geneticVisualiser = createVisualiser()
 
-    assertEquals(2 to 0, geneticVisualizer.reduceFraction(2, 0))
-    assertEquals(0 to 2, geneticVisualizer.reduceFraction(0, 2))
+    assertEquals(2 to 0, geneticVisualiser.reduceFraction(2, 0))
+    assertEquals(0 to 2, geneticVisualiser.reduceFraction(0, 2))
 
-    assertEquals(2 to 3, geneticVisualizer.reduceFraction(2, 3))
-    assertEquals(5 to 2, geneticVisualizer.reduceFraction(5, 2))
-    assertEquals(2 to 1, geneticVisualizer.reduceFraction(2, 1))
+    assertEquals(2 to 3, geneticVisualiser.reduceFraction(2, 3))
+    assertEquals(5 to 2, geneticVisualiser.reduceFraction(5, 2))
+    assertEquals(2 to 1, geneticVisualiser.reduceFraction(2, 1))
 
-    assertEquals(2 to 1, geneticVisualizer.reduceFraction(4, 2))
-    assertEquals(1 to 2, geneticVisualizer.reduceFraction(2, 4))
-    assertEquals(1 to 1, geneticVisualizer.reduceFraction(2, 2))
-    assertEquals(1 to 2, geneticVisualizer.reduceFraction(5, 10))
-    assertEquals(5 to 1, geneticVisualizer.reduceFraction(15, 3))
-    assertEquals(5 to 7, geneticVisualizer.reduceFraction(15, 21))
-    assertEquals(5 to -7, geneticVisualizer.reduceFraction(15, -21))
-    assertEquals(-5 to 7, geneticVisualizer.reduceFraction(-15, 21))
-    assertEquals(5 to 7, geneticVisualizer.reduceFraction(-15, -21))
+    assertEquals(2 to 1, geneticVisualiser.reduceFraction(4, 2))
+    assertEquals(1 to 2, geneticVisualiser.reduceFraction(2, 4))
+    assertEquals(1 to 1, geneticVisualiser.reduceFraction(2, 2))
+    assertEquals(1 to 2, geneticVisualiser.reduceFraction(5, 10))
+    assertEquals(5 to 1, geneticVisualiser.reduceFraction(15, 3))
+    assertEquals(5 to 7, geneticVisualiser.reduceFraction(15, 21))
+    assertEquals(5 to -7, geneticVisualiser.reduceFraction(15, -21))
+    assertEquals(-5 to 7, geneticVisualiser.reduceFraction(-15, 21))
+    assertEquals(5 to 7, geneticVisualiser.reduceFraction(-15, -21))
   }
 
-  private fun createVisualizer(): Day7GeneticVisualizer {
-    val properties = Day7GeneticVisualizerProperties(
+  private fun createVisualiser(): Day7GeneticVisualiser {
+    val properties = Day7GeneticVisualiserProperties(
       2, 1, 1, 1, HashMap(), emptyList(),
       1, 1, 1, 0.0
     )
-    return Day7GeneticVisualizer(properties)
+    return Day7GeneticVisualiser(properties)
   }
 
-  private fun createVisualizer(nodeGrid: HashMap<String, Coord>, nodes: List<Node>, penalty: Int = 1,
-                               chanceOfMutation: Double = 0.0, iterationsWithoutChangesBeforeConverging: Int = 1): Day7GeneticVisualizer {
+  private fun createVisualiser(nodeGrid: HashMap<String, Coord>, nodes: List<PreReq>, penalty: Int = 1,
+                               chanceOfMutation: Double = 0.0, iterationsWithoutChangesBeforeConverging: Int = 1): Day7GeneticVisualiser {
 
-    val properties = Day7GeneticVisualizerProperties(
-      2, 1, 1, iterationsWithoutChangesBeforeConverging, nodeGrid, nodes,
-      getMaxRowInGrid(nodeGrid), getMaxColInGrid(nodeGrid), penalty, chanceOfMutation
+    val properties = Day7GeneticVisualiserProperties(
+      2, 1, 1, iterationsWithoutChangesBeforeConverging,
+      nodeGrid, nodes, getMaxRowInGrid(nodeGrid), getMaxColInGrid(nodeGrid), penalty, chanceOfMutation
     )
-    return Day7GeneticVisualizer(properties)
+    return Day7GeneticVisualiser(properties)
   }
 }
 
-private fun createNodeGrid(): Pair<List<Node>, HashMap<String, Coord>> {
+private fun createNodeGrid(): Pair<List<PreReq>, HashMap<String, Coord>> {
   val nodes = createInputText(
     listOf(
       NodeRep("A", dependsOn = nothing()),
@@ -357,12 +358,12 @@ private fun assertIndividualsDiffer(individual0: Map<String, Coord>, individual1
   assertNotEquals(originalRows, resultingRows, "There is a tiny minuscule risk that these might be equal, but that is neglectable")
 }
 
-fun createInputText(nodeReps: List<NodeRep>): List<Node> {
+fun createInputText(nodeReps: List<NodeRep>): List<PreReq> {
   val stringList = mutableListOf<String>()
   for (nodeRep in nodeReps)
     for (dep in nodeRep.dependsOn)
       stringList.add("Step $dep must be finished before step ${nodeRep.id} can begin.")
-  return createNodesFromInput(stringList)
+  return createNodesFromInput(stringList).convertToPreReq()
 }
 
 private fun nothing() = emptyList<String>()
