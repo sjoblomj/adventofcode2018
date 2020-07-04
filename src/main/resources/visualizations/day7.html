@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advent of Code 2018, Day 7</title>
+    <style>
+      body { padding: 5em; }
+      #button-box { padding-bottom: 2em; padding-top: 2em; }
+      p { text-align: justify; }
+    </style>
+    <script>
+        // wnumb v.1.2.0  https://github.com/leongersen/wnumb
+        !function(e){"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?module.exports=e():window.wNumb=e()}(function(){"use strict";var o=["decimals","thousand","mark","prefix","suffix","encoder","decoder","negativeBefore","negative","edit","undo"];function w(e){return e.split("").reverse().join("")}function h(e,t){return e.substring(0,t.length)===t}function f(e,t,n){if((e[t]||e[n])&&e[t]===e[n])throw new Error(t)}function x(e){return"number"==typeof e&&isFinite(e)}function n(e,t,n,r,i,o,f,u,s,c,a,p){var d,l,h,g=p,v="",m="";return o&&(p=o(p)),!!x(p)&&(!1!==e&&0===parseFloat(p.toFixed(e))&&(p=0),p<0&&(d=!0,p=Math.abs(p)),!1!==e&&(p=function(e,t){return e=e.toString().split("e"),(+((e=(e=Math.round(+(e[0]+"e"+(e[1]?+e[1]+t:t)))).toString().split("e"))[0]+"e"+(e[1]?e[1]-t:-t))).toFixed(t)}(p,e)),-1!==(p=p.toString()).indexOf(".")?(h=(l=p.split("."))[0],n&&(v=n+l[1])):h=p,t&&(h=w((h=w(h).match(/.{1,3}/g)).join(w(t)))),d&&u&&(m+=u),r&&(m+=r),d&&s&&(m+=s),m+=h,m+=v,i&&(m+=i),c&&(m=c(m,g)),m)}function r(e,t,n,r,i,o,f,u,s,c,a,p){var d,l="";return a&&(p=a(p)),!(!p||"string"!=typeof p)&&(u&&h(p,u)&&(p=p.replace(u,""),d=!0),r&&h(p,r)&&(p=p.replace(r,"")),s&&h(p,s)&&(p=p.replace(s,""),d=!0),i&&function(e,t){return e.slice(-1*t.length)===t}(p,i)&&(p=p.slice(0,-1*i.length)),t&&(p=p.split(t).join("")),n&&(p=p.replace(n,".")),d&&(l+="-"),""!==(l=(l+=p).replace(/[^0-9\.\-.]/g,""))&&(l=Number(l),f&&(l=f(l)),!!x(l)&&l))}function i(e,t,n){var r,i=[];for(r=0;r<o.length;r+=1)i.push(e[o[r]]);return i.push(n),t.apply("",i)}return function e(t){if(!(this instanceof e))return new e(t);"object"==typeof t&&(t=function(e){var t,n,r,i={};for(void 0===e.suffix&&(e.suffix=e.postfix),t=0;t<o.length;t+=1)if(void 0===(r=e[n=o[t]]))"negative"!==n||i.negativeBefore?"mark"===n&&"."!==i.thousand?i[n]=".":i[n]=!1:i[n]="-";else if("decimals"===n){if(!(0<=r&&r<8))throw new Error(n);i[n]=r}else if("encoder"===n||"decoder"===n||"edit"===n||"undo"===n){if("function"!=typeof r)throw new Error(n);i[n]=r}else{if("string"!=typeof r)throw new Error(n);i[n]=r}return f(i,"mark","thousand"),f(i,"prefix","negative"),f(i,"prefix","negativeBefore"),i}(t),this.to=function(e){return i(t,n,e)},this.from=function(e){return i(t,r,e)})}});
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://refreshless.com/nouislider/distribute/nouislider.css?v=1402">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://refreshless.com/nouislider/distribute/nouislider.js?v=1402"></script>
+</head>
+
+<body>
+<h1>Advent of Code 2018, Day 7 -- genetic algorithm and solution</h1>
+<div id="button-box">
+  <button id="intro-button" class="btn btn-default" onclick="resetGraph('introText');">Intro</button>
+  <button id="original-node-ordering-button" class="btn btn-default" onclick="activateOriginalOrdering();">Dense original grid</button>
+  <button id="initial-population-button" class="btn btn-default" onclick="activateInitialPopulation();">Initial genetic population</button>
+  <button id="best-individual-in-each-iteration-button" class="btn btn-default" onclick="activateGeneticProgress();">Genetic progress</button>
+  <button id="solution-button" class="btn btn-default" onclick="activateSolution();">Genetic solution</button>
+</div>
+
+<div id="introText" class="texts">
+  <p>The <a href="https://adventofcode.com/2018/day/7" target="_blank">Advent of Code 2018 day 7</a> challenge consists of being given a number of steps, many of which depend on other steps. Thus, the steps can be ordered. The challenge consists of finding the right order to complete the steps. In order to complete a step X, each step that it depends on must be completed already. If several steps can be completed, the one with the lowest alphabetical id is chosen. Thus, this is a depth-first problem. Since the dependencies between the steps are quite complex, this page shows a graph of how they depend on one another. By hovering over a step X in the graph, the steps that must be completed before X are shown in blue, and the steps that demand that X is completed before them are shown in red.</p>
+
+  <p>The columns in the graph (x-coordinates) are chosen so that each prerequisite to a step is strictly to the left of the step. Applying only that rule will result in a dense graph, which can be seen by clicking the "Dense original grid" button. While it shows the prerequisites of every step in a correct column, it is not very easy to visually make sense of. The graph is very cluttered. When hovering over steps, it will be difficult and/or misleading to try to figure out which steps that are prerequisites/dependers on a node.</p>
+
+  <p>Using a <a href="https://en.wikipedia.org/wiki/Genetic_algorithm" target="_blank">Genetic algorithm</a>, we can try to make a better graph. The columns (x-coordinates) of the graph are fixed, and the algorithm will stochastically try to figure out better rows (y-coordinates). The algorithm will operate on a list of solutions (a population, where each element in the list is referred to as an individual), and it will run until no more progress is made. Starting off, a population is generated with random positions. This can be seen by clicking the "Initial genetic population" button.</p>
+
+  <p>Each iteration of the genetic algorithm operates on a population (list), where each individual (element) is a graph. The algorithm will evaluate how good each individual (graph) in the population is using a fitness function. The fitness function will promote dense graphs (it will sum the euclidean distance of every line in the graph and try to minimise that number), while at the same time punish an individual that has a line between step X and Y that passes through step Z. In other words, it will try to keep the graph as dense as possible, but discourage lines from going through unrelated steps since that is visually confusing. After each iteration of the algorithm, the best performers are selected, along with a few randomly chosen other individuals. These will "breed" to create a new population that the next iteration of the algorithm will operate on. Two individuals out of the chosen ones will be selected at random and produce one child, until we have reached a population of the size we want. The columns for each step are always fixed and will be the same on every individual, only the row positions change. From the randomly selected mother, the child inherits the row positions of her first column. The child then inherits the row positions of the second column of its randomly selected father. This is repeated, so that the row positions of every even column comes from the mother and the row positions of every odd column comes from the father. Finally, to prevent the algorithm from getting stuck in a suboptimal local minimum, we inflict random mutations to some individuals in the population. The mutation consists of randomly selecting a node. The node will get a new row position that is randomly chosen. If there already is another node at that place, the nodes swap places. The progress of the algorithm can be seen by clicking the "Genetic progress" button.</p>
+
+  <p>The final graph can be seen by clicking the "Genetic solution" button. There, one can also follow how the steps are chosen when solving the challenge in day 7. Note that the order of which the steps should be completed is not calculated by the genetic algorithm, but the graph that displays it is.</p>
+</div>
+
+<div id="originalOrderingText" class="texts" style="display:none;">
+  <p>The columns in the graph (x-coordinates) are chosen so that each prerequisite to a step is strictly to the left of the step. Applying only that rule will result in a dense graph, which is shown here. While it shows the prerequisites of every step in a correct column, it is not very easy to visually make sense of. The graph is very cluttered. When hovering over steps, it will be difficult and/or misleading to try to figure out which steps that are prerequisites/dependers on a node.</p>
+</div>
+
+<div id="initialPopulationText" class="texts" style="display:none;">
+  <p>Using a <a href="https://en.wikipedia.org/wiki/Genetic_algorithm" target="_blank">Genetic algorithm</a>, we can try to make a better graph. The columns (x-coordinates) of the graph are fixed, and the algorithm will stochastically try to figure out better rows (y-coordinates). The algorithm will operate on a list of solutions (a population, where each element in the list is referred to as an individual), and it will run until no more progress is made. Starting off, a population is generated with random positions. Use the slider to see the random initial individuals that were generated as a starting point for the algorithm.</p>
+  <br /><br />
+  <div id="initial-population-slider"></div>
+</div>
+
+<div id="geneticProgressText" class="texts" style="display:none;">
+  <p>Each iteration of the genetic algorithm operates on a population (list), where each individual (element) is a graph. The algorithm will evaluate how good each individual (graph) in the population is using a fitness function. The fitness function will promote dense graphs (it will sum the euclidean distance of every line in the graph and try to minimise that number), while at the same time punish an individual that has a line between step X and Y that passes through step Z. In other words, it will try to keep the graph as dense as possible, but discourage lines from going through unrelated steps since that is visually confusing. After each iteration of the algorithm, the best performers are selected, along with a few randomly chosen other individuals. These will "breed" to create a new population that the next iteration of the algorithm will operate on. Two individuals out of the chosen ones will be selected at random and produce one child, until we have reached a population of the size we want. The columns for each step are always fixed and will be the same on every individual, only the row positions change. From the randomly selected mother, the child inherits the row positions of her first column. The child then inherits the row positions of the second column of its randomly selected father. This is repeated, so that the row positions of every even column comes from the mother and the row positions of every odd column comes from the father. Finally, to prevent the algorithm from getting stuck in a suboptimal local minimum, we inflict random mutations to some individuals in the population. The mutation consists of randomly selecting a node. The node will get a new row position that is randomly chosen. If there already is another node at that place, the nodes swap places. Use the slider to see the progress of the algorithm (note though that the algorithm only shows the best performer in every iteration -- each iteration really has several individuals).</p>
+
+  <p>Fitness score of this iteration: <b><span id="fitnessScore"></span></b></p>
+  <br /><br />
+  <div id="genetic-progress-slider"></div>
+</div>
+
+<div id="solutionText" class="texts" style="display:none;">
+  <p>The final graph can be seen here. The small nodes at the top are the order that one should complete the steps in order to solve the challenge in <a href="https://adventofcode.com/2018/day/7" target="_blank">Advent of Code 2018 day 7</a>. Hover over the small nodes to see the algorithm progress.</p>
+
+  <p>Note that the order of which the steps should be completed is not calculated by the genetic algorithm, but the graph that displays it is.</p>
+</div>
+
+<div id="grid-container">
+  <div id="grid"></div>
+</div>
+
+<script>
+    var nodeDistance = 100;
+
+    var resultingOrder = ""; // This will be populated by the visualizer. ##VISUALIZER_RESULTING_ORDER##
+    var linkData = []; // This will be populated by the visualizer. ##VISUALIZER_LINK_DATA##
+    var solution = []; // This will be populated by the visualizer. ##VISUALIZER_SOLUTION##
+    var originalNodeOrdering = []; // This will be populated by the visualizer. ##VISUALIZER_ORIGINAL_NODE_ORDERING##
+    var initialPopulation = []; // This will be populated by the visualizer. ##VISUALIZER_ORIGINAL_POPULATION##
+    var bestIndividualInEachIteration = []; // This will be populated by the visualizer. ##VISUALIZER_BEST_INDIVIDUAL_IN_EACH_ITERATION##
+
+    var index = 0;
+
+    function activateSolution() {
+        resetGraph("solutionText");
+        resetSliders();
+        var grid = drawGraph(solution);
+        drawSolutionNodes(grid);
+    }
+    function activateOriginalOrdering() {
+        resetGraph("originalOrderingText");
+        resetSliders();
+        drawGraph(originalNodeOrdering);
+    }
+
+    function activateInitialPopulation() {
+        resetSliders();
+        var sliderId = 'initial-population-slider';
+        var fnk = function update() {
+            resetGraph("initialPopulationText");
+            var slider = document.getElementById(sliderId);
+            index = slider.noUiSlider.get() - 0;
+            drawGraph(initialPopulation[index]);
+        };
+        setupSlider(sliderId, initialPopulation.length - 1, "Individual: ", fnk);
+    }
+
+    function activateGeneticProgress() {
+        resetSliders();
+        var sliderId = 'genetic-progress-slider';
+        var fnk = function update() {
+            resetGraph("geneticProgressText");
+            var slider = document.getElementById(sliderId);
+            index = slider.noUiSlider.get() - 0;
+            document.getElementById("fitnessScore").innerHTML = bestIndividualInEachIteration[index].score;
+            drawGraph(bestIndividualInEachIteration[index].individual);
+        };
+        setupSlider(sliderId, bestIndividualInEachIteration.length - 1, "Iteration: ", fnk);
+    }
+
+    function setupSlider(sliderId, sliderMax, prefix, updateFunction) {
+        var slider = document.getElementById(sliderId);
+
+        noUiSlider.create(slider, {
+            start: 0,
+            step: 1,
+            animate: false,
+            connect: [true, false],
+            tooltips: [wNumb({prefix: prefix, decimals: 0})],
+            range: {
+                'min': 0,
+                'max': sliderMax
+            }
+        });
+
+        slider.noUiSlider.on('update', updateFunction);
+        slider.noUiSlider.on('set', updateFunction);
+    }
+
+
+    function resetGraph(idToDisplay) {
+        var texts = document.getElementsByClassName("texts");
+        for (var i = 0; i < texts.length; i++) {
+            texts[i].style.display = "none";
+        }
+
+        resetDiv("grid-container", "grid");
+        document.getElementById(idToDisplay).style.display = "block";
+    }
+
+    function resetDiv(parentId, divId) {
+        var parent = document.getElementById(parentId);
+        parent.removeChild(document.getElementById(divId));
+        var newDiv = document.createElement('div');
+        newDiv.setAttribute("id", divId);
+        parent.appendChild(newDiv);
+    }
+
+    function resetSliders() {
+        resetDiv("geneticProgressText", "genetic-progress-slider");
+        resetDiv("initialPopulationText", "initial-population-slider");
+    }
+
+
+    function createLinkCoordinates(links, nodes) {
+        return links
+            .map(function(link) {
+                var fromNode = nodes.filter(function(node) { return node.id === link.from })[0];
+                var toNode   = nodes.filter(function(node) { return node.id === link.to })[0];
+                return {fromX: fromNode.x, fromY: fromNode.y, toX: toNode.x, toY: toNode.y, fromId: fromNode.id, toId: toNode.id };
+            });
+    }
+
+    function createOutputOrder() {
+        return resultingOrder
+            .split("")
+            .map(function(d, i) { return {id: d, x: i + 1, y: 1}; });
+    }
+
+
+    function setLineColours(lineIds, colour, strokeWidth) {
+        lineIds
+            .map(function (d) { return document.getElementById(d) })
+            .filter(function (d) { return d != null; })
+            .forEach(function (elem) { elem.style.strokeWidth = strokeWidth; elem.style.stroke = colour; });
+    }
+
+    function unhighlightLines() {
+        linkData
+            .map(function(node) {
+                var nodeId = node.to;
+                return linkData
+                    .filter(function(d) { return d.to === nodeId; })
+                    .map(function(d) { return "from_" + d.from + "_to_" + nodeId });
+            } )
+            .forEach(function(lineIds) { setLineColours(lineIds, "gray", "2px"); });
+    }
+
+    function highlightLines(node) {
+        var lineIds;
+
+        lineIds = linkData
+            .filter(function(d) { return d.to === node.id; })
+            .map(function(d) { return "from_" + d.from + "_to_" + node.id });
+        setLineColours(lineIds, "blue", "3px");
+
+        lineIds = linkData
+            .filter(function(d) { return d.from === node.id; })
+            .map(function(d) { return "from_" + node.id + "_to_" + d.to });
+        setLineColours(lineIds, "red", "3px");
+    }
+
+    function highlightNodes(node, index) {
+
+        var nodes = createOutputOrder();
+        var nodeIds = nodes.map(function (d) { return "node_" + d.id });
+        var outputNodeIds = nodes.map(function (d) { return "outputNode_" + d.id });
+
+        setColourInNodes(nodeIds, "white");
+        setColourInNodes(nodeIds.slice(0, index + 1), "#22dd66");
+        setColourInNodes(outputNodeIds, "white");
+        setColourInNodes(outputNodeIds.slice(0, index + 1), "#22dd66");
+    }
+
+    function setColourInNodes(nodeIds, colour) {
+        nodeIds
+            .map(function (id) { return document.getElementById(id) })
+            .filter(function (elem) { return elem != null; })
+            .forEach(function (elem) { elem.style.fill = colour; });
+    }
+
+
+    function drawGraph(nodeGraph) {
+        var linkCoordinates = createLinkCoordinates(linkData, nodeGraph);
+
+        var maxX = Math.max.apply(Math, nodeGraph.map(function(d) { return d.x; }));
+        var maxY = Math.max.apply(Math, nodeGraph.map(function(d) { return d.y; }));
+
+        var grid = d3.select("#grid")
+            .append("svg")
+            .attr("width", (1 + maxX) * nodeDistance + "px")
+            .attr("height", (1 + maxY) * nodeDistance + "px");
+
+        grid.selectAll(".lines")
+            .data(linkCoordinates)
+            .enter()
+            .append("line")
+            .attr("x1", function(d) { return d.fromX * nodeDistance; })
+            .attr("y1", function(d) { return d.fromY * nodeDistance; })
+            .attr("x2", function(d) { return d.toX   * nodeDistance; })
+            .attr("y2", function(d) { return d.toY   * nodeDistance; })
+            .attr("stroke", "gray")
+            .attr("stroke-width", 2)
+            .attr("id", function(d) { return "from_" + d.fromId + "_to_" + d.toId; });
+
+        grid.selectAll(".circle")
+            .data(nodeGraph)
+            .enter().append("circle")
+            .attr("class", "circle")
+            .attr("cx", function(d) { return d.x * nodeDistance; })
+            .attr("cy", function(d) { return d.y * nodeDistance; })
+            .attr("r", nodeDistance / 4)
+            .style("fill", "#fff")
+            .style("stroke", "#222")
+            .on("mouseover", function(d) { highlightLines(d); })
+            .on("mouseout", function() { unhighlightLines(); })
+            .attr("id", function (d) { return "node_" + d.id });
+
+        grid.selectAll(".text")
+            .data(nodeGraph)
+            .enter()
+            .append("text")
+            .attr("x", function(d) { return d.x * nodeDistance; })
+            .attr("y", function(d) { return 5 + d.y * nodeDistance; })
+            .attr("text-anchor", "middle")
+            .on("mouseover", function(d) { highlightLines(d); })
+            .on("mouseout", function() { unhighlightLines(); })
+            .text(function(d) { return d.id; });
+
+        unhighlightLines();
+        return grid;
+    }
+
+    function drawSolutionNodes(grid) {
+
+        grid.selectAll(".outputOrderCircles")
+            .data(createOutputOrder())
+            .enter().append("circle")
+            .attr("class", "circle")
+            .attr("cx", function(d) { return d.x * nodeDistance / 2; })
+            .attr("cy", function(d) { return d.y * nodeDistance / 2; })
+            .attr("r", nodeDistance / 6)
+            .style("fill", "#fff")
+            .style("stroke", "#222")
+            .on("click", function(d, index) { highlightNodes(d, index); })
+            .on("mouseover", function(d, index) { highlightNodes(d, index); })
+            .attr("id", function (d) { return "outputNode_" + d.id });
+
+        grid.selectAll(".textOutputNodes")
+            .data(createOutputOrder())
+            .enter()
+            .append("text")
+            .attr("x", function(d) { return d.x * nodeDistance / 2; })
+            .attr("y", function(d) { return 5 + d.y * nodeDistance / 2; })
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d.id; });
+    }
+</script>
+
+</body>
+</html>
