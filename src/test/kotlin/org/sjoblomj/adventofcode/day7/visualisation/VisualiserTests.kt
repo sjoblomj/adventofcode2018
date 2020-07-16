@@ -170,7 +170,7 @@ class VisualiserTests {
   }
 
   @Test
-  fun `Test Visualiser -- Initialize Population`() {
+  fun `Test Visualiser -- Initialise Population`() {
     val (nodes, nodeGrid) = createNodeGrid()
     val geneticVisualiser = createVisualiser(nodeGrid, nodes)
 
@@ -268,19 +268,19 @@ class VisualiserTests {
 
 
   @Test
-  fun `Can factorize`() {
+  fun `Can factorise`() {
     val geneticVisualiser = createVisualiser()
 
-    assertEquals(emptyList(), geneticVisualiser.factorize(0).sorted())
-    assertEquals(emptyList(), geneticVisualiser.factorize(1).sorted())
-    assertEquals(listOf(2), geneticVisualiser.factorize(2).sorted())
-    assertEquals(listOf(3), geneticVisualiser.factorize(3).sorted())
-    assertEquals(listOf(2, 2), geneticVisualiser.factorize(4).sorted())
-    assertEquals(listOf(5), geneticVisualiser.factorize(5).sorted())
-    assertEquals(listOf(2, 3), geneticVisualiser.factorize(6).sorted())
-    assertEquals(listOf(7), geneticVisualiser.factorize(7).sorted())
-    assertEquals(listOf(2, 2, 5), geneticVisualiser.factorize(5*2*2).sorted())
-    assertEquals(listOf(3, 7), geneticVisualiser.factorize(21).sorted())
+    assertEquals(emptyList(), geneticVisualiser.factorise(0).sorted())
+    assertEquals(emptyList(), geneticVisualiser.factorise(1).sorted())
+    assertEquals(listOf(2), geneticVisualiser.factorise(2).sorted())
+    assertEquals(listOf(3), geneticVisualiser.factorise(3).sorted())
+    assertEquals(listOf(2, 2), geneticVisualiser.factorise(4).sorted())
+    assertEquals(listOf(5), geneticVisualiser.factorise(5).sorted())
+    assertEquals(listOf(2, 3), geneticVisualiser.factorise(6).sorted())
+    assertEquals(listOf(7), geneticVisualiser.factorise(7).sorted())
+    assertEquals(listOf(2, 2, 5), geneticVisualiser.factorise(5*2*2).sorted())
+    assertEquals(listOf(3, 7), geneticVisualiser.factorise(21).sorted())
   }
 
   @Test

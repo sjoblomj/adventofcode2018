@@ -83,7 +83,7 @@ fun createVisualisationFileOnHarddrive(nodes: List<Node>, resultingOrder: String
                                        solution: Map<String, Coord>, initialPopulation: List<Map<String, Coord>>,
                                        bestIndividualInEachIteration: List<Pair<Map<String, Coord>, Score>>) {
 
-  val content = Day7GeneticVisualiser::class.java.getResource("/visualizations/day7.html").readText()
+  val content = Day7GeneticVisualiser::class.java.getResource("/visualisations/day7.html").readText()
 
   fun replaceLine(content: String, searchString: String, newValue: String): String {
     val stringIndex = content.indexOf(searchString)
@@ -106,7 +106,7 @@ fun createVisualisationFileOnHarddrive(nodes: List<Node>, resultingOrder: String
   updatedContent = replaceLine(updatedContent, "##VISUALIZER_ORIGINAL_POPULATION##", "    var initialPopulation = $initialPopulationData;")
   updatedContent = replaceLine(updatedContent, "##VISUALIZER_BEST_INDIVIDUAL_IN_EACH_ITERATION##", "    var bestIndividualInEachIteration = $bestIndividual;")
 
-  val dir = "./build/visualizations/"
+  val dir = "./build/visualisations/"
   val filename = "day7.html"
   if (!File(dir).exists()) {
     assert(File(dir).mkdir())
@@ -119,9 +119,6 @@ fun createVisualisationFileOnHarddrive(nodes: List<Node>, resultingOrder: String
 data class PreReq(val id: String, val prerequisites: List<PreReq>)
 
 internal fun Collection<Node>.convertToPreReq(): List<PreReq> {
-  fun createPreReq(node: Node): PreReq =
-    PreReq(
-      node.id,
-      node.prerequisites.map { createPreReq(it) })
+  fun createPreReq(node: Node): PreReq = PreReq(node.id, node.prerequisites.map { createPreReq(it) } )
   return this.map { createPreReq(it) }
 }

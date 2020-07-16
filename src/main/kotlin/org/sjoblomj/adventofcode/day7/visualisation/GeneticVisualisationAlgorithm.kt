@@ -162,15 +162,15 @@ class Day7GeneticVisualiser(properties: Day7GeneticVisualiserProperties) :
 
     val mSign = if (m < 0 && n >= 0) -1 else 1
     val nSign = if (n < 0 && m >= 0) -1 else 1
-    val mFactors = factorize(abs(m))
-    val nFactors = factorize(abs(n))
+    val mFactors = factorise(abs(m))
+    val nFactors = factorise(abs(n))
 
     val mReduced = mFactors.subtractUnique(nFactors).product()
     val nReduced = nFactors.subtractUnique(mFactors).product()
     return mSign*mReduced to nSign*nReduced
   }
 
-  internal fun factorize(n: Int): List<Int> {
+  internal fun factorise(n: Int): List<Int> {
     if (n < 2) {
       return emptyList()
     }
