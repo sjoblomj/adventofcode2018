@@ -1,5 +1,7 @@
 package org.sjoblomj.adventofcode.day7
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.sjoblomj.adventofcode.day7.visualisation.visualise
 import org.sjoblomj.adventofcode.readFile
 import kotlin.system.measureTimeMillis
@@ -53,5 +55,5 @@ fun getFirstNodes(nodes: List<Node>): List<Node> {
 
 
 fun output(nodes: List<Node>, resultingOrder: String) {
-  visualise(nodes, resultingOrder)
+  GlobalScope.launch { visualise(nodes, resultingOrder) }
 }
