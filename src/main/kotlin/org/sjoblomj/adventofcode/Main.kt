@@ -1,6 +1,7 @@
 package org.sjoblomj.adventofcode
 
 import org.sjoblomj.adventofcode.day1.day1
+import org.sjoblomj.adventofcode.day11.day11
 import org.sjoblomj.adventofcode.day2.day2
 import org.sjoblomj.adventofcode.day3.day3
 import org.sjoblomj.adventofcode.day4.day4
@@ -18,4 +19,5 @@ fun main() {
   day7()
   day8()
   day9()
+  day11()
 }
